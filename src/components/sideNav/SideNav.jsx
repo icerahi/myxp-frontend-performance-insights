@@ -4,20 +4,21 @@ import { useState } from "react";
 import "./SideNav.css";
 import axios from "axios";
 import { all_venues } from "../../urls";
+import useStateData from "../../hooks/useStateData";
+
 const SideNav = () => {
-  const [tests, setTests] = useState([]);
-  const [venues,setVenues] = useState([])
-   
+
+  const {tests,setTests,venues,setVenues} = useStateData()
 
   useEffect(() => {
     const getData = async () => {
       const res = await axios.get(all_venues);
       setTests(res.data);
       
-
       res.data.map((test) => {
-        delete test.timestamp
-        setVenues(Object.keys(test))
+        const allVenues=test
+        // delete allVenues.timestamp
+        setVenues(Object.keys(allVenues))
          
       });
     };
