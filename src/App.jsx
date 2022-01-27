@@ -9,7 +9,8 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 import Home from "./components/home/Home";
-import Venue from "./components/venue/Venue";
+import VenueByName from "./components/venue/VenueByName";
+import VenueByNameTimeStamp from "./components/venue/VenueByNameTimeStamp";
 
 function App() {
   return (
@@ -20,7 +21,10 @@ function App() {
         <div className="main">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/venue/:venue" element={<Venue />} />
+            <Route path="/venue/:venue">
+              <Route path=":timestamp" element={<VenueByNameTimeStamp/>}/>
+              <Route path="" element={<VenueByName/>}/>
+            </Route>
           </Routes>
         </div>
       </Router>
