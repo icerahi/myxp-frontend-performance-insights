@@ -9,6 +9,7 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 import Home from "./components/home/Home";
+import Venue from "./components/venue/Venue";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <div className="main">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/venue/:venue" element={<Venue />} />
           </Routes>
         </div>
       </Router>

@@ -5,6 +5,7 @@ import "./SideNav.css";
 import axios from "axios";
 import { all_venues } from "../../urls";
 import useStateData from "../../hooks/useStateData";
+import { Link, NavLink } from "react-router-dom";
 
 const SideNav = () => {
 
@@ -16,8 +17,10 @@ const SideNav = () => {
       setTests(res.data);
       
       res.data.map((test) => {
-        const allVenues=test
-        // delete allVenues.timestamp
+        const allVenues={...test}
+       
+        delete allVenues.timestamp
+   
         setVenues(Object.keys(allVenues))
          
       });
@@ -50,7 +53,7 @@ const SideNav = () => {
               className="offcanvas-title  text-muted"
               id="offcanvasExampleLabel"
             >
-              Venues ({venues.length})
+              <Link to="/">Home</Link>
             </h5>
             {/* <button
             type="button"
@@ -64,12 +67,12 @@ const SideNav = () => {
               <ul className="navbar-nav m-0 p-0">
                 {venues.map((venue,index) => (
                   <li key={index} className="my-2">
-                    <a
-                      href=""
-                      className="nav-link text-capitalize btn btn-default  bg-light fw-bolder px-3 active"
+                    <NavLink className={ (navData)=> navData.isActive?"nav-link text-capitalize btn btn-success fw-bolder px-3 active":"nav-link text-capitalize btn btn-default fw-bolder px-3"}
+                      to={`/venue/${venue}`}
+   
                     >
                      {venue}
-                    </a>
+                    </NavLink>
                   </li>
                 ))}
               </ul>
