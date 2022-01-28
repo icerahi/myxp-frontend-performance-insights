@@ -11,6 +11,8 @@ import {
 import Home from "./components/home/Home";
 import VenueByName from "./components/venue/VenueByName";
 import VenueByNameTimeStamp from "./components/venue/VenueByNameTimeStamp";
+import BarChart from "./components/charts/BarChart";
+import { Bar } from "react-chartjs-2";
 
 function App() {
   return (
@@ -21,11 +23,14 @@ function App() {
         <div className="main">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/barchart" element={<BarChart />} />
             <Route path="/venue/:venue">
               <Route path=":timestamp" element={<VenueByNameTimeStamp/>}/>
               <Route path="" element={<VenueByName/>}/>
             </Route>
           </Routes>
+
+    
         </div>
       </Router>
     </DataProvider>
