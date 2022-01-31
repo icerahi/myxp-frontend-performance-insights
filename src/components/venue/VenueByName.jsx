@@ -68,18 +68,7 @@ const VenueByName = () => {
                 {
                   label: "Performance Metrics (ms)",
                   data: [
-                    venue?.desktop["first-contentful-paint"]?.value.split(
-                      "ms"
-                    )[0],
-                    venue?.desktop["largest-contentful-paint"]?.value.split(
-                      "ms"
-                    )[0],
-                    venue?.desktop["speed-index"]?.value.split("ms")[0],
-                    venue?.desktop["interactive"]?.value.split("ms")[0],
-                    venue?.desktop["total-blocking-time"]?.value.split("ms")[0],
-                    venue?.desktop["cumulative-layout-shift"]?.value.split(
-                      "ms"
-                    )[0],
+                    {x:"2019-01-03",y:15}
                   ],
                   backgroundColor: [
                     "rgba(255, 99, 132, 0.2)",

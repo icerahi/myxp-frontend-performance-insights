@@ -13,6 +13,7 @@ import VenueByName from "./components/venue/VenueByName";
 import VenueByNameTimeStamp from "./components/venue/VenueByNameTimeStamp";
 import BarChart from "./components/charts/BarChart";
 import { Bar } from "react-chartjs-2";
+import Venue from "./components/venue/Venue";
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
             <Route path="/barchart" element={<BarChart />} />
             <Route path="/venue/:venue">
               <Route path=":timestamp" element={<VenueByNameTimeStamp/>}/>
-              <Route path="" element={<VenueByName/>}/>
+              <Route path="" element={<Venue/>}/>
             </Route>
           </Routes>
 
