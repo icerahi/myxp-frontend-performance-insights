@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams,useSearchParams} from "react-router-dom";
 import dayjs from "dayjs";
 import { Bar, Line } from "react-chartjs-2";
 import { Chart as Chartjs } from "chart.js/auto";
@@ -14,6 +14,9 @@ const Venue = () => {
 
   const [venue, setVenue] = useState(null);
   const [results, setResult] = useState([]);
+  let [searchParams,setSearchParams] = useSearchParams()
+  console.log(searchParams.get('name'),searchParams.get('version'))
+  
   useEffect(() => {
     const getData = async () => {
       const res = await axios.get(
