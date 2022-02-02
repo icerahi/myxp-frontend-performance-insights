@@ -1,0 +1,65 @@
+URLS
+"""
+https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/performance.json => provides the latest score of different venues on GEVME Virtual
+
+https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/genesis/performance.json => provides the latest score of specific venue
+
+https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/genesis/1642672884658/desktop.json  => provides the list of pages used in computing the desktop score
+
+
+https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/genesis/genesis-test-page-blank-template-PCIOS/1642672884658/desktop.html
+
+https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/genesis/1642672884658/mobile.json => provides the list of pages used in computing the desktop score
+""" 
+
+""Chart Demo"
+Genesis
+
+Desktop/Mobile =>line chart
+
+Y axis=>Overall Score
+X axis =>Timestamp
+
+
+Metric Details => Line Chart
+
+GRAPH FOR METRIC 1
+Y axis=>Metric 1 Value
+X axis=>Timestamp
+
+GRAPH FOR METRIC 2
+Y axis=>Metric 1 Value
+X axis=>Timestamp
+
+##################### Implementation ############
+
+react lighthouse viewer
+
+HOME 
+
+DEVICE SELECTION
+
+SCORE OF EACH VENUE
+
+GRAPH OF ALL VENUES IN ONE
+
+ON SELECT VENUE
+
+DEVICE SELECTION
+
+FIGMA DESIGN =>OVERALL AVG SCORE OF 5 LIVEPAGES
+
+DROP DOWN OF LIVEPAGES=>PATHS
+
+DROP DOWN OF METRIC => FCP/LCP…
+
+
+METRIC VS TIMEST̄AMP
+
+
+SELECT A TIMESTAMP FOR DETAILED REPORT
+
+https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/genesis/genesis-test-page-blank-template-PCIOS/1642672884658/desktop.html
+
+
+URL TO DETAILED REPORT 
