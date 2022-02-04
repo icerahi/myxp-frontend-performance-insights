@@ -11,7 +11,6 @@ import axios from "axios";
 import "./Home.css";
 import shareIcon from "../../assets/share.svg";
 import useClipboard from "react-hook-clipboard";
-import { domain } from "../../.env.js";
 import { getColor } from "../../utils/utils";
 import VenuesScore from "./VenuesScore";
 import PerformanceMetrics from "./PerformanceMetrics";
@@ -142,7 +141,7 @@ const Home = () => {
     const getVenueData = async () => {
       setLoading(true);
       const res1 = await axios.get(
-        `${domain}/${selectVenue?.value}/performance.json`
+        `${process.env.REACT_APP_DOMAIN}/${selectVenue?.value}/performance.json`
       );
       setVenueData(res1.data);
 
@@ -150,7 +149,7 @@ const Home = () => {
       res1?.data?.history?.map((timestamp) =>
         axios
           .get(
-            `${domain}/${selectVenue?.value}/${timestamp}/${selectDevice?.value}.json`
+            `${process.env.REACT_APP_DOMAIN}/${selectVenue?.value}/${timestamp}/${selectDevice?.value}.json`
           )
           .then((res) => {
             timeStamps.push(res.data);

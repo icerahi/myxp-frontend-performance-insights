@@ -2,7 +2,6 @@ import React from "react";
 import { useEffect } from "react";
 import "./NavBar.css";
 import axios from "axios";
-import { domain } from "../../.env.js";
 import useStateData from "../../hooks/useStateData";
 
 const NavBar = () => {
@@ -10,7 +9,7 @@ const NavBar = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const res = await axios.get(`${domain}/performance.json`);
+      const res = await axios.get(`${process.env.REACT_APP_DOMAIN}/performance.json`);
       setTests(res.data);
 
       res.data.map((test) => {
@@ -46,6 +45,7 @@ const NavBar = () => {
 
           <div className="collapse navbar-collapse " id="navbarNavDropdown">
             <ul className="navbar-nav ms-auto">
+              
               {/* <li className="nav-item">
                  
               </li> */}
