@@ -2,8 +2,10 @@
     position:fixed;
     top:85%;
     right:3%;
+    z-index: 999;
 }
 .copyto-clipboard button,img{
      border:0 ;
      border-radius: 50%;
+
 }

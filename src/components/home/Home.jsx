@@ -4,7 +4,7 @@ import useStateData from "../../hooks/useStateData";
 import Select from "react-select";
 import { useState } from "react";
 import dayjs from "dayjs";
-import { CircularProgressbar } from "react-circular-progressbar";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { Line } from "react-chartjs-2";
 import LineChart from "../charts/LineChart";
@@ -16,6 +16,7 @@ import "./Home.css";
 import shareIcon from "../../assets/share.svg";
 import useClipboard from "react-hook-clipboard";
 import { domain } from "../../.env";
+import { getColor } from "../../utils";
 
 const deviceOptions = [
   { value: "desktop", label: "Desktop" },
@@ -199,6 +200,10 @@ const Home = () => {
               value={lastTest[venue][selectDevice.value]}
               text={`${lastTest[venue][selectDevice.value]}%`}
               className="text-success"
+              background={true}
+              styles={buildStyles({
+                ...getColor(lastTest[venue][selectDevice.value]),
+              })}
             />
             <p className="text-capitalize lead text-center">{venue}</p>
           </div>
@@ -225,7 +230,11 @@ const Home = () => {
           <CircularProgressbar
             value={venueData[selectDevice.value]?.overallScore}
             text={`${venueData[selectDevice.value]?.overallScore}%`}
-            className="text-success w-25 p-4 shadow-3 mx-auto"
+            className="w-25 p-4 mx-auto"
+            background={true}
+            styles={buildStyles({
+              ...getColor(venueData[selectDevice.value]?.overallScore),
+            })}
           />
         </div>
         <p className="fw-bold text-center lead">Over all performance score</p>
@@ -305,7 +314,7 @@ const Home = () => {
         />
       </div>
       <div className="my-5">
-        <h5 className="text-center">Graph of Matrics vs Timestamp</h5>
+        <h5 className="text-center">Graph of Metrics vs Timestamp</h5>
 
         <LineChart data={matrixGraphData} matrix={true} />
       </div>
