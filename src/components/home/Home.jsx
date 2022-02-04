@@ -12,6 +12,7 @@ import LineChart from "../charts/LineChart";
 import { useParams, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import Spinner from "../spinner/Spinner";
+import Iframe from "react-iframe";
 
 const deviceOptions = [
   { value: "desktop", label: "Desktop" },
@@ -44,14 +45,19 @@ const Home = () => {
   // const venueOptions = venues?.map((venue) => ({ value: venue, label: venue }));
 
   const livePageOptions = livePages?.map((livePage) => ({
-    value: livePage,
-    label: livePage,
+    value: livePage.split("/")[0],
+    label: livePage.split("/")[0],
+  }));
+  const timestampOptions = timestampsData?.map((timestamp) => ({
+    value: timestamp.timestamp,
+    label: dayjs(timestamp.timestamp).format("DD MMM YYYY HH:MM A"),
   }));
 
   const [selectDevice, setSelectDevice] = useState(deviceOptions[0]);
   const [selectVenue, setSelectVenue] = useState(venueOptions[0]);
   const [selectLivePage, setSelectLivePage] = useState(livePageOptions[0]);
   const [selectMatrix, setSelectMatrix] = useState(matricsOptions[0]);
+  const [selectTimestamp, setSelectTimestamp] = useState(timestampOptions[0]);
 
   let lastTest = tests.find(
     (test) =>
@@ -75,18 +81,21 @@ const Home = () => {
       yAxisID: "y",
     })),
   };
-
-  const matricsGraphData = {
-    labels: tests.map((test) =>
-      dayjs(test.timestamp).format("DD MMM YYYY HH:MM A")
+  const matrixGraphData = {
+    labels: timestampsData.map((timestamp) =>
+      dayjs(timestamp.timestamp).format("DD MMM YYYY HH:MM A")
     ),
-    datasets: venues.map((venue, index) => ({
-      label: venue.toUpperCase(),
-      data: tests.map((test) => test[venue][selectDevice.value]),
-      borderColor: colors[index],
-      backgroundColor: colors[index],
-      yAxisID: "y",
-    })),
+    datasets: [
+      {
+        label: selectMatrix.label + " : ms",
+        data: timestampsData.map(
+          (data) => data[selectMatrix.value].value.split("ms")[0]
+        ),
+        borderColor: colors[0],
+        backgroundColor: colors[0],
+        yAxisID: "y",
+      },
+    ],
   };
 
   const [venueData, setVenueData] = useState({});
@@ -102,7 +111,7 @@ const Home = () => {
       res1?.data?.history?.map((timestamp) =>
         axios
           .get(
-            `https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/${timestamp}/desktop.json`
+            `https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/${timestamp}/${selectDevice?.value}.json`
           )
           .then((res) => setTimestampsData((t) => [...t, res.data]))
       );
@@ -233,15 +242,6 @@ const Home = () => {
       {/* indivisual venue information end  */}
 
       {/* live pages  */}
-      <div>
-        <h6>Select a live page</h6>
-        <Select
-          className="w-50"
-          defaultValue={selectLivePage}
-          onChange={setSelectLivePage}
-          options={livePageOptions}
-        />
-      </div>
 
       <div>
         <h6>Select a Matrix</h6>
@@ -255,7 +255,56 @@ const Home = () => {
       <div className="my-5">
         <h5 className="text-center">Graph of Matrics vs Timestamp</h5>
         {/* graph  */}
-        <LineChart data={graphData} />
+        <LineChart data={matrixGraphData} matrix={true} />
+      </div>
+
+      <div className="my-2">
+        <h6>Select a live page</h6>
+        <Select
+          className="w-50"
+          defaultValue={selectLivePage}
+          onChange={setSelectLivePage}
+          options={livePageOptions}
+        />
+      </div>
+      {/* select timestamp for genarate report  */}
+      <div className="my-2">
+        <h6>Select a Timestamp for detailed report</h6>
+        <Select
+          className="w-50"
+          defaultValue={selectTimestamp}
+          onChange={setSelectTimestamp}
+          options={timestampOptions}
+        />
+      </div>
+      <div className="my-2">
+        {selectVenue?.value &&
+          selectLivePage?.value &&
+          selectLivePage?.value &&
+          selectTimestamp?.value &&
+          selectDevice?.value && (
+            <>
+              <Iframe
+                url={`https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/${selectLivePage?.value}/${selectTimestamp?.value}/${selectDevice?.value}.html`}
+                width="100%"
+                height="500px"
+                id="myId"
+                className="myClassname"
+                display="initial"
+                position="relative"
+              />
+              <p>
+                Detailed Report Url:{" "}
+                <a
+                  href={`https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/${selectLivePage?.value}/${selectTimestamp?.value}/${selectDevice?.value}.html`}
+                >
+                  https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/$
+                  {selectVenue?.value}/${selectLivePage?.value}/$
+                  {selectTimestamp?.value}/${selectDevice?.value}.html
+                </a>{" "}
+              </p>
+            </>
+          )}
       </div>
     </div>
   );

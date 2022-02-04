@@ -92,23 +92,23 @@ const VenueByName = () => {
             }}
             options={{
               plugins: {  // 'legend' now within object 'plugins {}'
-                // legend: {
-                //   labels: {
-                //     color: "blue",  // not 'fontColor:' anymore
-                //     backgroundColor:"black",
-                //     // fontSize: 18  // not 'fontSize:' anymore
-                //     font: {
-                //       size: 18 // 'size' now within object 'font {}'
-                //     }
-                //   }
-                // },
-                // tooltip:{
-                //   callbacks:{
-                //     afterLabel:(context)=>{
-                //       return context.dataset.label+" ms"
-                //     }
-                //   }
-                // }
+                legend: {
+                  labels: {
+                    color: "blue",  // not 'fontColor:' anymore
+                    backgroundColor:"black",
+                    // fontSize: 18  // not 'fontSize:' anymore
+                    font: {
+                      size: 18 // 'size' now within object 'font {}'
+                    }
+                  }
+                },
+                tooltip:{
+                  callbacks:{
+                    afterLabel:(context)=>{
+                      return context.dataset.label+" ms"
+                    }
+                  }
+                }
               },
               scales: {
                 yAxes: [

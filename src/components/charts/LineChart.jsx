@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Bar, Line } from "react-chartjs-2";
 
-const LineChart = ({ data }) => {
+const LineChart = ({ data, matrix }) => {
   return (
     <Line
       data={data}
@@ -17,7 +17,9 @@ const LineChart = ({ data }) => {
             display: false,
             text: "Graph of Each Venues Overall Score",
           },
+          
         },
+
         scales: {
           y: {
             type: "linear",
