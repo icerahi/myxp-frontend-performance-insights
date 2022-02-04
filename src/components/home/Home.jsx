@@ -15,6 +15,7 @@ import Iframe from "react-iframe";
 import "./Home.css";
 import shareIcon from "../../assets/share.svg";
 import useClipboard from "react-hook-clipboard";
+import { domain } from "../../.env";
 
 const deviceOptions = [
   { value: "desktop", label: "Desktop" },
@@ -48,7 +49,7 @@ const Home = () => {
 
   // const venueOptions = venues?.map((venue) => ({ value: venue, label: venue }));
 
-  const livePageOptions = livePages?.map((livePage) => ({
+  let livePageOptions = livePages?.map((livePage) => ({
     value: livePage.split("/")[0],
     label: livePage.split("/")[0],
   }));
@@ -58,7 +59,7 @@ const Home = () => {
   }));
 
   const [selectDevice, setSelectDevice] = useState(
-    (data) =>
+    () =>
       deviceOptions.find(
         (device) => device.value == searchParams.get("device")
       ) || deviceOptions[0]
@@ -109,60 +110,71 @@ const Home = () => {
       yAxisID: "y",
     })),
   };
+
   const matrixGraphData = {
-    labels: timestampsData.map((timestamp) =>
-      dayjs(timestamp.timestamp).format("DD MMM YYYY HH:MM A")
-    ),
+    labels:
+      timestampsData.length != 0
+        ? timestampsData.map((timestamp) =>
+            dayjs(timestamp.timestamp).format("DD MMM YYYY HH:MM A")
+          )
+        : [],
     datasets: [
       {
-        label: selectMatrix.label + " : ms",
-        data: timestampsData.map(
-          (data) => data[selectMatrix.value].value.split("ms")[0]
-        ),
+        label: selectMatrix?.label + " : ms",
+        data:
+          timestampsData.length != 0
+            ? timestampsData.map(
+                (data) => data[selectMatrix?.value]?.value.split("ms")[0]
+              )
+            : [],
         borderColor: colors[0],
         backgroundColor: colors[0],
         yAxisID: "y",
       },
     ],
   };
-
+  console.log(matrixGraphData);
   const [venueData, setVenueData] = useState({});
+
   useEffect(() => {
     const getVenueData = async () => {
       setLoading(true);
       const res1 = await axios.get(
-        `https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/performance.json`
+        `${domain}/${selectVenue?.value}/performance.json`
       );
       setVenueData(res1.data);
-      setLoading(false);
+      console.log(dayjs(res1?.data?.createdAt).format("DD MMM YYYY HH:MM A"));
+
+      const timeStamps = [];
 
       res1?.data?.history?.map((timestamp) =>
         axios
           .get(
-            `https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/${timestamp}/${selectDevice?.value}.json`
+            `${domain}/${selectVenue?.value}/${timestamp}/${selectDevice?.value}.json`
           )
-          .then((res) => setTimestampsData((t) => [...t, res.data]))
+          .then((res) => {
+            timeStamps.push(res.data);
+            setLivePages(res.data?.paths);
+          })
       );
-
-      //getting latest timestamp venue data and live pages
-      const res3 = await axios.get(
-        `https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/${res1.data?.createdAt}/${selectDevice.value}.json`
-      );
-      setLivePages(res3.data?.paths);
+      setTimestampsData(timeStamps);
+      setLoading(false);
     };
     getVenueData();
-  }, [selectVenue, selectDevice]);
+  }, [selectVenue, selectDevice, selectMatrix]);
 
-  let clipboardValue = `${window.location.origin}/?device=${selectDevice?.value}
-  &venue=${selectVenue?.value}
-  &matrix=${selectMatrix?.value}
-  &livepage=${selectLivePage?.value}
-  &timestamp=${selectTimestamp?.value}`;
+  let clipboardValue = `${window.location.origin}/?device=${
+    selectDevice?.value || ""
+  }&venue=${selectVenue?.value || ""}&matrix=${
+    selectMatrix?.value || ""
+  }&livepage=${selectLivePage?.value || ""}&timestamp=${
+    selectTimestamp?.value || ""
+  }`;
   return (
     <div className="container mb-2">
       <button
         onClick={() => copyToClipboard(clipboardValue)}
-        title="Copy Url: "
+        title={`Copy URL:${clipboardValue}`}
         className="copyto-clipboard border-0 bg-light"
       >
         <img width={50} src={shareIcon} alt="" />
@@ -294,58 +306,60 @@ const Home = () => {
       </div>
       <div className="my-5">
         <h5 className="text-center">Graph of Matrics vs Timestamp</h5>
-        {/* graph  */}
+
         <LineChart data={matrixGraphData} matrix={true} />
       </div>
 
-      <div className="my-2">
-        <h6>Select a live page</h6>
-        <Select
-          className="w-50"
-          defaultValue={selectLivePage}
-          onChange={setSelectLivePage}
-          options={livePageOptions}
-        />
-      </div>
-      {/* select timestamp for genarate report  */}
-      <div className="my-2">
-        <h6>Select a Timestamp for detailed report</h6>
-        <Select
-          className="w-50"
-          defaultValue={selectTimestamp}
-          onChange={setSelectTimestamp}
-          options={timestampOptions}
-        />
-      </div>
-      <div className="my-2">
-        {selectVenue?.value &&
-          selectLivePage?.value &&
-          selectLivePage?.value &&
-          selectTimestamp?.value &&
-          selectDevice?.value && (
-            <>
-              <Iframe
-                url={`https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/${selectLivePage?.value}/${selectTimestamp?.value}/${selectDevice?.value}.html`}
-                width="100%"
-                height="500px"
-                id="myId"
-                className="myClassname"
-                display="initial"
-                position="relative"
-              />
-              <p>
-                Detailed Report Url:{" "}
-                <a
-                  href={`https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/${selectLivePage?.value}/${selectTimestamp?.value}/${selectDevice?.value}.html`}
-                >
-                  https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/$
-                  {selectVenue?.value}/${selectLivePage?.value}/$
-                  {selectTimestamp?.value}/${selectDevice?.value}.html
-                </a>{" "}
-              </p>
-            </>
-          )}
-      </div>
+      <>
+        <div className="my-2">
+          <h6>Select a live page</h6>
+          <Select
+            className="w-50"
+            defaultValue={selectLivePage}
+            onChange={setSelectLivePage}
+            options={livePageOptions}
+          />
+        </div>
+        {/* select timestamp for genarate report  */}
+        <div className="my-2">
+          <h6>Select a Timestamp for detailed report</h6>
+          <Select
+            className="w-50"
+            defaultValue={selectTimestamp}
+            onChange={setSelectTimestamp}
+            options={timestampOptions}
+          />
+        </div>
+        <div className="my-2">
+          {selectVenue?.value &&
+            selectLivePage?.value &&
+            selectLivePage?.value &&
+            selectTimestamp?.value &&
+            selectDevice?.value && (
+              <>
+                <Iframe
+                  url={`https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/${selectLivePage?.value}/${selectTimestamp?.value}/${selectDevice?.value}.html`}
+                  width="100%"
+                  height="500px"
+                  id="myId"
+                  className="myClassname"
+                  display="initial"
+                  position="relative"
+                />
+                <small>
+                  Detailed Report URL:
+                  <a
+                    href={`https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/${selectLivePage?.value}/${selectTimestamp?.value}/${selectDevice?.value}.html`}
+                  >
+                    https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/
+                    {selectVenue?.value}/{selectLivePage?.value}/
+                    {selectTimestamp?.value}/{selectDevice?.value}.html
+                  </a>{" "}
+                </small>
+              </>
+            )}
+        </div>
+      </>
     </div>
   );
 };

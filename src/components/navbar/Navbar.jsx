@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import "./NavBar.css";
 import axios from "axios";
-import { all_venues } from "../../urls";
+import { domain } from "../../.env";
 import useStateData from "../../hooks/useStateData";
 import { Link, NavLink } from "react-router-dom";
 
@@ -12,7 +12,7 @@ const NavBar = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const res = await axios.get(all_venues);
+      const res = await axios.get(`${domain}/performance.json`);
       setTests(res.data);
 
       res.data.map((test) => {
@@ -30,10 +30,10 @@ const NavBar = () => {
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-white">
         <div className="container">
-          <Link className="navbar-brand" to="/">
+          <a className="navbar-brand" href="/">
             <span className="brand-logo fw-bold">XP</span>{" "}
             <span className="fw-bold">Gevme Xchange 2022</span>
-          </Link>
+          </a>
           <button
             className="navbar-toggler"
             type="button"

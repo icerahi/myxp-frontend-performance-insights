@@ -1,2 +1,0 @@
-export const all_venues="https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/performance.json"
-export const specific_venue="https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/genesis/performance.json"
