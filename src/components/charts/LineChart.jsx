@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Bar, Line } from "react-chartjs-2";
+import { Chart as Chartjs } from "chart.js/auto";
+import { Chart  } from "chart.js";
+
+Chart.defaults.global={
+  showTooltips:false
+}
 
 const LineChart = ({ data, matrix }) => {
   return (

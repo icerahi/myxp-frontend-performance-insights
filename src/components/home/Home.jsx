@@ -1,4 +1,3 @@
-import { isValidInputTimeValue } from "@testing-library/user-event/dist/utils";
 import React, { useEffect } from "react";
 import DataProvider from "../../context/DataProvider";
 import useStateData from "../../hooks/useStateData";
@@ -13,6 +12,9 @@ import { useParams, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import Spinner from "../spinner/Spinner";
 import Iframe from "react-iframe";
+import "./Home.css";
+import shareIcon from "../../assets/share.svg";
+import useClipboard from "react-hook-clipboard";
 
 const deviceOptions = [
   { value: "desktop", label: "Desktop" },
@@ -38,9 +40,11 @@ const matricsOptions = [
 const Home = () => {
   const [loading, setLoading] = useState(true);
   let [searchParams, setSearchParams] = useSearchParams();
+
   const { tests, venues } = useStateData();
   const [livePages, setLivePages] = useState([]);
   const [timestampsData, setTimestampsData] = useState([]);
+  const [clipboard, copyToClipboard] = useClipboard();
 
   // const venueOptions = venues?.map((venue) => ({ value: venue, label: venue }));
 
@@ -53,11 +57,35 @@ const Home = () => {
     label: dayjs(timestamp.timestamp).format("DD MMM YYYY HH:MM A"),
   }));
 
-  const [selectDevice, setSelectDevice] = useState(deviceOptions[0]);
-  const [selectVenue, setSelectVenue] = useState(venueOptions[0]);
-  const [selectLivePage, setSelectLivePage] = useState(livePageOptions[0]);
-  const [selectMatrix, setSelectMatrix] = useState(matricsOptions[0]);
-  const [selectTimestamp, setSelectTimestamp] = useState(timestampOptions[0]);
+  const [selectDevice, setSelectDevice] = useState(
+    (data) =>
+      deviceOptions.find(
+        (device) => device.value == searchParams.get("device")
+      ) || deviceOptions[0]
+  );
+  const [selectVenue, setSelectVenue] = useState(
+    () =>
+      venueOptions.find((venue) => venue.value == searchParams.get("venue")) ||
+      venueOptions[0]
+  );
+  const [selectLivePage, setSelectLivePage] = useState(() =>
+    livePageOptions.find(
+      (livepage) =>
+        livepage.value == searchParams.get("livepage") || livePageOptions[0]
+    )
+  );
+  const [selectMatrix, setSelectMatrix] = useState(
+    () =>
+      matricsOptions.find(
+        (matrix) => matrix.value == searchParams.get("matrix")
+      ) || matricsOptions[0]
+  );
+  const [selectTimestamp, setSelectTimestamp] = useState(
+    () =>
+      timestampOptions.find(
+        (timestamp) => timestamp.value == searchParams.get("timestamp")
+      ) || timestampOptions[0]
+  );
 
   let lastTest = tests.find(
     (test) =>
@@ -125,8 +153,20 @@ const Home = () => {
     getVenueData();
   }, [selectVenue, selectDevice]);
 
+  let clipboardValue = `${window.location.origin}/?device=${selectDevice?.value}
+  &venue=${selectVenue?.value}
+  &matrix=${selectMatrix?.value}
+  &livepage=${selectLivePage?.value}
+  &timestamp=${selectTimestamp?.value}`;
   return (
     <div className="container mb-2">
+      <button
+        onClick={() => copyToClipboard(clipboardValue)}
+        title="Copy Url: "
+        className="copyto-clipboard border-0 bg-light"
+      >
+        <img width={50} src={shareIcon} alt="" />
+      </button>
       {/* select device  */}
       <h6>Select a device</h6>
       <Select

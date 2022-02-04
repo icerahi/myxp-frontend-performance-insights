@@ -4,9 +4,9 @@ const DataStore = () => {
   const [tests, setTests] = useState([]);
   const [venues, setVenues] = useState([]);
 
-  return { tests, setTests, venues, setVenues };
-};
 
+  return { tests, setTests, venues, setVenues};
+};
 
 export const DataContext = createContext();
 const DataProvider = ({ children }) => {
