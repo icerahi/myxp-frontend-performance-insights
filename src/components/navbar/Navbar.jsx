@@ -1,14 +1,12 @@
 import React from "react";
 import { useEffect } from "react";
-import { useState } from "react";
 import "./NavBar.css";
 import axios from "axios";
-import { domain } from "../../.env";
+import { domain } from "../../.env.js";
 import useStateData from "../../hooks/useStateData";
-import { Link, NavLink } from "react-router-dom";
 
 const NavBar = () => {
-  const { tests, setTests, venues, setVenues } = useStateData();
+  const { setTests, setVenues } = useStateData();
 
   useEffect(() => {
     const getData = async () => {

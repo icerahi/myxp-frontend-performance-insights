@@ -1,22 +1,21 @@
 import React, { useEffect } from "react";
-import DataProvider from "../../context/DataProvider";
 import useStateData from "../../hooks/useStateData";
 import Select from "react-select";
 import { useState } from "react";
 import dayjs from "dayjs";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { Line } from "react-chartjs-2";
 import LineChart from "../charts/LineChart";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import axios from "axios";
-import Spinner from "../spinner/Spinner";
-import Iframe from "react-iframe";
 import "./Home.css";
 import shareIcon from "../../assets/share.svg";
 import useClipboard from "react-hook-clipboard";
-import { domain } from "../../.env";
-import { getColor } from "../../utils";
+import { domain } from "../../.env.js";
+import { getColor } from "../../utils/utils";
+import VenuesScore from "./VenuesScore";
+import PerformanceMetrics from "./PerformanceMetrics";
+import Report from "./Report";
 
 const deviceOptions = [
   { value: "desktop", label: "Desktop" },
@@ -30,6 +29,7 @@ const venueOptions = [
   { value: "redrock", label: "Redrock" },
   { value: "bunker", label: "Bunker" },
 ];
+
 const matricsOptions = [
   { value: "first-contentful-paint", label: "First Contentful Paint" },
   { value: "largest-contentful-paint", label: "Largest Contentful Paint" },
@@ -59,33 +59,34 @@ const Home = () => {
     label: dayjs(timestamp.timestamp).format("DD MMM YYYY HH:MM A"),
   }));
 
+  //select handlers
   const [selectDevice, setSelectDevice] = useState(
     () =>
       deviceOptions.find(
-        (device) => device.value == searchParams.get("device")
+        (device) => device.value === searchParams.get("device")
       ) || deviceOptions[0]
   );
   const [selectVenue, setSelectVenue] = useState(
     () =>
-      venueOptions.find((venue) => venue.value == searchParams.get("venue")) ||
+      venueOptions.find((venue) => venue.value === searchParams.get("venue")) ||
       venueOptions[0]
   );
   const [selectLivePage, setSelectLivePage] = useState(() =>
     livePageOptions.find(
       (livepage) =>
-        livepage.value == searchParams.get("livepage") || livePageOptions[0]
+        livepage.value === searchParams.get("livepage") || livePageOptions[0]
     )
   );
   const [selectMatrix, setSelectMatrix] = useState(
     () =>
       matricsOptions.find(
-        (matrix) => matrix.value == searchParams.get("matrix")
+        (matrix) => matrix.value === searchParams.get("matrix")
       ) || matricsOptions[0]
   );
   const [selectTimestamp, setSelectTimestamp] = useState(
     () =>
       timestampOptions.find(
-        (timestamp) => timestamp.value == searchParams.get("timestamp")
+        (timestamp) => timestamp.value === searchParams.get("timestamp")
       ) || timestampOptions[0]
   );
 
@@ -99,7 +100,7 @@ const Home = () => {
 
   const colors = ["red", "yellow", "blue", "orange", "green"];
 
-  const graphData = {
+  const scoreGraphData = {
     labels: tests.map((test) =>
       dayjs(test.timestamp).format("DD MMM YYYY HH:MM A")
     ),
@@ -114,7 +115,7 @@ const Home = () => {
 
   const matrixGraphData = {
     labels:
-      timestampsData.length != 0
+      timestampsData.length !== 0
         ? timestampsData.map((timestamp) =>
             dayjs(timestamp.timestamp).format("DD MMM YYYY HH:MM A")
           )
@@ -123,7 +124,7 @@ const Home = () => {
       {
         label: selectMatrix?.label + " : ms",
         data:
-          timestampsData.length != 0
+          timestampsData.length !== 0
             ? timestampsData.map(
                 (data) => data[selectMatrix?.value]?.value.split("ms")[0]
               )
@@ -134,7 +135,7 @@ const Home = () => {
       },
     ],
   };
-  console.log(matrixGraphData);
+
   const [venueData, setVenueData] = useState({});
 
   useEffect(() => {
@@ -144,10 +145,8 @@ const Home = () => {
         `${domain}/${selectVenue?.value}/performance.json`
       );
       setVenueData(res1.data);
-      console.log(dayjs(res1?.data?.createdAt).format("DD MMM YYYY HH:MM A"));
 
       const timeStamps = [];
-
       res1?.data?.history?.map((timestamp) =>
         axios
           .get(
@@ -158,6 +157,7 @@ const Home = () => {
             setLivePages(res.data?.paths);
           })
       );
+
       setTimestampsData(timeStamps);
       setLoading(false);
     };
@@ -171,8 +171,10 @@ const Home = () => {
   }&livepage=${selectLivePage?.value || ""}&timestamp=${
     selectTimestamp?.value || ""
   }`;
+
   return (
     <div className="container mb-2">
+      {/* share button  */}
       <button
         onClick={() => copyToClipboard(clipboardValue)}
         title={`Copy URL:${clipboardValue}`}
@@ -180,6 +182,7 @@ const Home = () => {
       >
         <img width={50} src={shareIcon} alt="" />
       </button>
+
       {/* select device  */}
       <h6>Select a device</h6>
       <Select
@@ -192,28 +195,16 @@ const Home = () => {
       <h6 className="text-center">
         Last test : {dayjs(lastTest?.timestamp).format("DD MMM YYYY HH:MM A")}
       </h6>
-
-      <div className="row">
-        {venues.map((venue, index) => (
-          <div key={index} className="col-md-2 mx-auto">
-            <CircularProgressbar
-              value={lastTest[venue][selectDevice.value]}
-              text={`${lastTest[venue][selectDevice.value]}%`}
-              className="text-success"
-              background={true}
-              styles={buildStyles({
-                ...getColor(lastTest[venue][selectDevice.value]),
-              })}
-            />
-            <p className="text-capitalize lead text-center">{venue}</p>
-          </div>
-        ))}
-      </div>
+      <VenuesScore
+        venues={venues}
+        lastTest={lastTest}
+        selectDevice={selectDevice}
+      />
 
       <div className="my-5">
         <h5 className="text-center">Graph of all venus in one</h5>
         {/* graph  */}
-        <LineChart data={graphData} />
+        <LineChart data={scoreGraphData} />
       </div>
 
       {/* indivisual venue information */}
@@ -238,67 +229,7 @@ const Home = () => {
           />
         </div>
         <p className="fw-bold text-center lead">Over all performance score</p>
-        <div className="bg-white px-5 py-3">
-          <p className="fw-bold">Metrics</p>
-
-          <div className="row text-center">
-            {loading ? (
-              <Spinner />
-            ) : (
-              <>
-                <div className="col-md-6 border-top  justify-content-between">
-                  <p className="lead">
-                    First Contentful Paint <br />{" "}
-                    <span className="lead fw-bold">
-                      {venueData?.desktop["first-contentful-paint"]?.value}{" "}
-                    </span>
-                  </p>
-                </div>
-                <div className="col-md-6 border-top   ">
-                  <p className="lead">
-                    Largest Contentful Paint <br />
-                    <span className="lead fw-bold">
-                      {venueData?.desktop["largest-contentful-paint"]?.value}
-                    </span>
-                  </p>
-                </div>
-                <div className="col-md-6 border-top  ">
-                  <p className="lead">
-                    Speed Index <br />{" "}
-                    <span className="lead fw-bold">
-                      {venueData?.desktop["speed-index"]?.value}
-                    </span>
-                  </p>
-                </div>
-                <div className="col-md-6 border-top  ">
-                  <p className="lead">
-                    Interactive <br />{" "}
-                    <span className="lead fw-bold">
-                      {venueData?.desktop["interactive"]?.value}
-                    </span>
-                  </p>
-                </div>
-                <div className="col-md-6 border-top  ">
-                  <p className="lead">
-                    Total Blocking Time <br />{" "}
-                    <span className="lead fw-bold">
-                      {venueData?.desktop["total-blocking-time"]?.value}
-                    </span>
-                  </p>
-                </div>
-
-                <div className="col-md-6 border-top  ">
-                  <p className="lead">
-                    Cumulative Layout Shift <br />{" "}
-                    <span className="lead fw-bold">
-                      {venueData?.desktop["cumulative-layout-shift"]?.value}
-                    </span>
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+        <PerformanceMetrics loading={loading} venueData={venueData} />
       </div>
       {/* indivisual venue information end  */}
 
@@ -339,35 +270,13 @@ const Home = () => {
             options={timestampOptions}
           />
         </div>
-        <div className="my-2">
-          {selectVenue?.value &&
-            selectLivePage?.value &&
-            selectLivePage?.value &&
-            selectTimestamp?.value &&
-            selectDevice?.value && (
-              <>
-                <Iframe
-                  url={`https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/${selectLivePage?.value}/${selectTimestamp?.value}/${selectDevice?.value}.html`}
-                  width="100%"
-                  height="500px"
-                  id="myId"
-                  className="myClassname"
-                  display="initial"
-                  position="relative"
-                />
-                <small>
-                  Detailed Report URL:
-                  <a
-                    href={`https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/${selectVenue?.value}/${selectLivePage?.value}/${selectTimestamp?.value}/${selectDevice?.value}.html`}
-                  >
-                    https://gevme-virtual-performance-insights.s3.ap-southeast-1.amazonaws.com/
-                    {selectVenue?.value}/{selectLivePage?.value}/
-                    {selectTimestamp?.value}/{selectDevice?.value}.html
-                  </a>{" "}
-                </small>
-              </>
-            )}
-        </div>
+        {/* detailed report */}
+        <Report
+          selectDevice={selectDevice}
+          selectVenue={selectVenue}
+          selectLivePage={selectLivePage}
+          selectTimestamp={selectTimestamp}
+        />
       </>
     </div>
   );

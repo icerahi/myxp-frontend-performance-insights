@@ -1,5 +1,4 @@
 export const getColor = (value) => {
-  console.log(value);
   if (((value) => 0) && value <= 49) {
     return {
       textColor: "rgb(204,0,0)",

@@ -1,13 +1,6 @@
-import "./App.css";
 import NavBar from "./components/navbar/Navbar";
 import DataProvider from "./context/DataProvider";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  BrowserRouter,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import Home from "./components/home/Home";
 
 function App() {
@@ -15,7 +8,6 @@ function App() {
     <DataProvider>
       <Router>
         <NavBar />
-
         <div className="main bg-light">
           <Routes>
             <Route path="/" element={<Home />} />
